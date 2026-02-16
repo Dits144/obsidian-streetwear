@@ -1,19 +1,29 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { Product } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 
+export interface CartProduct {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  image: string;
+  category?: string;
+}
+
 export interface CartItem {
-  product: Product;
+  product: CartProduct;
   size: string;
   color: string;
   quantity: number;
+  variantId: string | null;
+  variantStock: number;
 }
 
 interface CartContextType {
   items: CartItem[];
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  addItem: (product: Product, size: string, color: string, qty?: number) => void;
+  addItem: (product: CartProduct, size: string, color: string, qty?: number, variantId?: string | null, variantStock?: number) => void;
   removeItem: (productId: string, size: string, color: string) => void;
   updateQuantity: (productId: string, size: string, color: string, qty: number) => void;
   clearCart: () => void;
@@ -28,7 +38,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const addItem = useCallback((product: Product, size: string, color: string, qty = 1) => {
+  const addItem = useCallback((product: CartProduct, size: string, color: string, qty = 1, variantId: string | null = null, variantStock = 0) => {
     setItems(prev => {
       const existing = prev.find(i => i.product.id === product.id && i.size === size && i.color === color);
       if (existing) {
@@ -38,7 +48,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             : i
         );
       }
-      return [...prev, { product, size, color, quantity: qty }];
+      return [...prev, { product, size, color, quantity: qty, variantId, variantStock }];
     });
     toast({ title: "Added to cart", description: `${product.name} — ${size}, ${color}` });
     setIsOpen(true);
