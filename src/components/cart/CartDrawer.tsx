@@ -2,7 +2,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { formatPrice } from "@/data/products";
+import { formatPrice } from "@/hooks/useProducts";
 import { Link } from "react-router-dom";
 
 export default function CartDrawer() {
@@ -19,9 +19,7 @@ export default function CartDrawer() {
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <p className="text-muted-foreground mb-4">Your cart is empty</p>
-              <Button onClick={() => setIsOpen(false)} asChild>
-                <Link to="/shop">Continue Shopping</Link>
-              </Button>
+              <Button onClick={() => setIsOpen(false)} asChild><Link to="/shop">Continue Shopping</Link></Button>
             </div>
           </div>
         ) : (
@@ -31,8 +29,8 @@ export default function CartDrawer() {
                 const key = `${item.product.id}-${item.size}-${item.color}`;
                 return (
                   <div key={key} className="flex gap-4">
-                    <div className="w-20 h-24 bg-secondary flex-shrink-0 flex items-center justify-center">
-                      <span className="text-[10px] text-muted-foreground uppercase">{item.product.category}</span>
+                    <div className="w-20 h-24 bg-secondary flex-shrink-0 overflow-hidden">
+                      <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
@@ -61,7 +59,6 @@ export default function CartDrawer() {
                 );
               })}
             </div>
-
             <div className="border-t border-border px-6 py-5 space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
